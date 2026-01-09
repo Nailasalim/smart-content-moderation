@@ -1,14 +1,87 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  MODERATOR
+}
+
+enum ContentStatus {
+  PENDING
+  FLAGGED
+  APPROVED
+  REMOVED
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+}
+
+enum ActionType {
+  APPROVE
+  WARN
+  REMOVE
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+
+  contents  Content[]
+  reports   Report[]
+  actions   ModerationAction[]
+
+  createdAt DateTime @default(now())
+}
+
+model Content {
+  id        Int           @id @default(autoincrement())
+  text      String
+  status    ContentStatus @default(PENDING)
+  aiFlagged Boolean       @default(false)
+
+  userId    Int
+  user      User          @relation(fields: [userId], references: [id])
+
+  reports   Report[]
+  actions   ModerationAction[]
+
+  createdAt DateTime @default(now())
+}
+
+model Report {
+  id        Int          @id @default(autoincrement())
+  reason    String
+  status    ReportStatus @default(PENDING)
+
+  contentId Int
+  userId    Int
+
+  content   Content @relation(fields: [contentId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model ModerationAction {
+  id          Int        @id @default(autoincrement())
+  action      ActionType
+
+  moderatorId Int
+  contentId   Int
+
+  moderator   User      @relation(fields: [moderatorId], references: [id])
+  content     Content   @relation(fields: [contentId], references: [id])
+
+  createdAt   DateTime  @default(now())
 }
