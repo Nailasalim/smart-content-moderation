@@ -12,3 +12,8 @@ export const takeModerationAction = (contentId, action) => {
     action,
   });
 };
+
+// Fetch content history
+export const getContentHistory = (contentId) => {
+  return api.get(`/moderation/history/${contentId}`);
+};

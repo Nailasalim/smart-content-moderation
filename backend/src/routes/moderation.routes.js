@@ -4,6 +4,7 @@ import { requireRole } from "../middleware/role.middleware.js";
 import {
   getModerationQueue,
   takeModerationAction,
+  getContentHistory,
 } from "../controllers/moderation.controller.js";
 
 const router = express.Router();
@@ -20,6 +21,13 @@ router.post(
   authenticateToken,
   requireRole("MODERATOR"),
   takeModerationAction
+);
+
+router.get(
+  "/history/:contentId",
+  authenticateToken,
+  requireRole("MODERATOR"),
+  getContentHistory
 );
 
 export default router;

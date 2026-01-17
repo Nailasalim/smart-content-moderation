@@ -2,10 +2,11 @@ import express from "express";
 import { authenticateToken } from "../middleware/auth.middleware.js";
 import { requireRole } from "../middleware/role.middleware.js";
 import {
-  createContent,
-  getFlaggedContent,
+  submitContent,
   getApprovedContent,
-  submitContent
+  getFlaggedContent,
+  getContentByStatus,
+  getCommunityContent,
 } from "../controllers/content.controller.js";
 
 const router = express.Router();
@@ -29,6 +30,15 @@ router.get(
 );
 
 /**
+ * USER: Get community content (approved + warned)
+ */
+router.get(
+  "/community",
+  authenticateToken,
+  getCommunityContent
+);
+
+/**
  * MODERATOR: View moderation queue
  */
 router.get(
@@ -38,6 +48,14 @@ router.get(
   getFlaggedContent
 );
 
-
+/**
+ * MODERATOR: Get content by status
+ */
+router.get(
+  "/by-status/:status",
+  authenticateToken,
+  requireRole("MODERATOR"),
+  getContentByStatus
+);
 
 export default router;

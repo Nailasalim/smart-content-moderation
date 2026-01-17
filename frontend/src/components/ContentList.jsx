@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getApprovedContent } from "../api/content.api";
 import { reportContent } from "../api/report.api";
+import api from "../api/axios";
 
 const ContentList = ({ refreshTrigger }) => {
   const [contents, setContents] = useState([]);
@@ -13,10 +14,28 @@ const ContentList = ({ refreshTrigger }) => {
   const fetchContent = async () => {
     setLoading(true);
     try {
-      const res = await getApprovedContent();
-      setContents(res.data.data);
+      // Try community endpoint first (approved + flagged)
+      try {
+        console.log("Fetching from community endpoint...");
+        const communityRes = await api.get("/content/community");
+        console.log("Community response:", communityRes.data);
+        console.log("Community response type:", typeof communityRes.data);
+        console.log("Community response length:", communityRes.data?.length);
+        
+        setContents(communityRes.data || []);
+      } catch (communityError) {
+        console.error("Community endpoint failed:", communityError);
+        console.log("Community endpoint error details:", communityError.response?.data);
+        console.log("Falling back to approved content...");
+        
+        // Fallback to approved content only
+        const res = await getApprovedContent();
+        console.log("Approved content response:", res.data);
+        setContents(res.data.data || []);
+      }
     } catch (err) {
       console.error("Failed to fetch content:", err);
+      setContents([]);
     } finally {
       setLoading(false);
     }
@@ -104,7 +123,12 @@ const ContentList = ({ refreshTrigger }) => {
           display: "grid",
           gap: "1rem"
         }}>
-          {contents.map((content) => (
+          {contents.map((content) => {
+            console.log("Rendering content:", content);
+            console.log("Content status:", content.status);
+            console.log("Content moderation actions:", content.moderationActions);
+            
+            return (
             <div
               key={content.id}
               style={{
@@ -164,6 +188,24 @@ const ContentList = ({ refreshTrigger }) => {
                 {content.text}
               </div>
 
+              {/* Warning Banner for Flagged Content */}
+              {content.status === "FLAGGED" && (
+                <div style={{
+                  backgroundColor: "#ffa500",
+                  color: "white",
+                  padding: "0.75rem",
+                  borderRadius: "8px",
+                  marginBottom: "1rem",
+                  fontSize: "0.85rem",
+                  fontWeight: "600",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem"
+                }}>
+                  ⚠️ This content has been flagged by AI
+                </div>
+              )}
+
               {/* Actions */}
               <div style={{ 
                 display: "flex", 
@@ -194,7 +236,8 @@ const ContentList = ({ refreshTrigger }) => {
                 </button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

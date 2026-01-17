@@ -86,3 +86,69 @@ export const reviewReport = async (req, res) => {
     res.status(500).json({ message: "Failed to review report" });
   }
 };
+
+/**
+ * GET /report/by-status/:status
+ * Fetch user reports by content status
+ */
+export const getReportsByContentStatus = async (req, res) => {
+  try {
+    const { status } = req.params;
+    
+    // Validate status
+    const validStatuses = ["APPROVED", "REMOVED", "FLAGGED"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const reports = await prisma.report.findMany({
+      where: {
+        content: {
+          status: status,
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        content: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            moderationActions: {
+              include: {
+                moderator: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
+              },
+              orderBy: {
+                createdAt: "desc",
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return res.json(reports);
+  } catch (error) {
+    console.error("Get reports by status error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

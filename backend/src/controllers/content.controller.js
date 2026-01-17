@@ -152,6 +152,104 @@ export const getApprovedContent = async (req, res) => {
   }
 };
 
+/**
+ * GET /content/community
+ * Fetch community content (APPROVED + WARNED content for users)
+ */
+export const getCommunityContent = async (req, res) => {
+  try {
+    const content = await prisma.content.findMany({
+      where: {
+        status: {
+          in: ["APPROVED", "FLAGGED"]
+        }
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        moderationActions: {
+          include: {
+            moderator: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return res.json(content);
+  } catch (error) {
+    console.error("Get community content error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+/**
+ * GET /content/by-status/:status
+ * Fetch content by status (APPROVED, REMOVED, WARNED)
+ */
+export const getContentByStatus = async (req, res) => {
+  try {
+    const { status } = req.params;
+    
+    // Validate status
+    const validStatuses = ["APPROVED", "REMOVED", "FLAGGED"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const content = await prisma.content.findMany({
+      where: { status },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        moderationActions: {
+          include: {
+            moderator: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return res.json(content);
+  } catch (error) {
+    console.error("Get content by status error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const getFlaggedContent = async (req, res) => {
   try {
     const content = await prisma.content.findMany({

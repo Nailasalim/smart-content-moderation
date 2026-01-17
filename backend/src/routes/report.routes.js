@@ -5,6 +5,7 @@ import {
   reportContent,
   getAllReports,
   reviewReport,
+  getReportsByContentStatus,
 } from "../controllers/report.controller.js";
 
 const router = express.Router();
@@ -12,6 +13,13 @@ const router = express.Router();
 router.post("/", authenticateToken, reportContent);
 
 router.get("/", authenticateToken, requireRole("MODERATOR"), getAllReports);
+
+router.get(
+  "/by-status/:status",
+  authenticateToken,
+  requireRole("MODERATOR"),
+  getReportsByContentStatus
+);
 
 router.patch(
   "/:id/review",

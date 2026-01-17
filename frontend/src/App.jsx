@@ -14,6 +14,7 @@ import SubmitContent from "./pages/user/SubmitContent";
 // Moderator pages
 import AIReports from "./pages/moderator/AIReports";
 import UserReports from "./pages/moderator/Reports";
+import ModeratorDashboard from "./pages/moderator/ModeratorDashboard";
 
 // Route protection
 import ProtectedRoute from "./auth/ProtectedRoute";
@@ -50,6 +51,15 @@ function App() {
           />
 
           {/* Moderator protected routes */}
+          <Route
+            path="/moderator"
+            element={
+              <ProtectedRoute requireModerator>
+                <ModeratorDashboard />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/moderator/ai-reports"
             element={

@@ -38,6 +38,37 @@ export const getModerationQueue = async (req, res) => {
  * POST /moderation/action
  * Take action on content (APPROVE, WARN, REMOVE)
  */
+/**
+ * GET /moderation/history/:contentId
+ * Fetch action history for specific content
+ */
+export const getContentHistory = async (req, res) => {
+  try {
+    const { contentId } = req.params;
+    
+    const actions = await prisma.moderationAction.findMany({
+      where: { contentId: Number(contentId) },
+      include: {
+        moderator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return res.json(actions);
+  } catch (error) {
+    console.error("Get content history error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const takeModerationAction = async (req, res) => {
   try {
     const { contentId, action } = req.body;

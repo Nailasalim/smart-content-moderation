@@ -1,19 +1,22 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
-import { takeModerationAction } from "../../api/moderation.api";
+import { takeModerationAction, getContentHistory } from "../../api/moderation.api";
 
 const AIReports = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState({});
+  const [expandedHistory, setExpandedHistory] = useState({});
 
   useEffect(() => {
     const fetchAIReports = async () => {
+      setLoading(true);
       try {
         const res = await api.get("/content/flagged");
-        setReports(res.data.data || res.data);
+        setReports(res.data.data || res.data || []);
       } catch (err) {
         console.error("Failed to fetch AI reports", err);
+        setReports([]); // Set empty array on error
       } finally {
         setLoading(false);
       }
@@ -28,13 +31,28 @@ const AIReports = () => {
     try {
       await takeModerationAction(contentId, action);
       
-      // Remove the item from the list after successful action
+      // Remove item from list after successful action
       setReports(prev => prev.filter(report => report.id !== contentId));
     } catch (err) {
       console.error("Failed to take action:", err);
       alert(`Failed to ${action.toLowerCase()} content. Please try again.`);
     } finally {
       setActionLoading(prev => ({ ...prev, [contentId]: null }));
+    }
+  };
+
+  const toggleHistory = async (contentId) => {
+    if (expandedHistory[contentId]) {
+      setExpandedHistory(prev => ({ ...prev, [contentId]: false }));
+      return;
+    }
+
+    try {
+      const res = await getContentHistory(contentId);
+      setExpandedHistory(prev => ({ ...prev, [contentId]: res.data }));
+    } catch (err) {
+      console.error("Failed to fetch history:", err);
+      alert("Failed to fetch action history.");
     }
   };
 
@@ -136,7 +154,7 @@ const AIReports = () => {
                       fontSize: "0.8rem",
                       color: "#8e8e8e"
                     }}>
-                      Submitted by: {report.user.email}
+                      Submitted by: {report.user?.email || "Unknown"}
                     </div>
                   </div>
                   <div style={{
@@ -147,7 +165,7 @@ const AIReports = () => {
                     backgroundColor: report.status === "FLAGGED" ? "#ed4956" : "#0095f6",
                     color: "white"
                   }}>
-                    {report.status}
+                    {report.status || "UNKNOWN"}
                   </div>
                 </div>
 
@@ -170,7 +188,7 @@ const AIReports = () => {
                     color: "white",
                     lineHeight: "1.5"
                   }}>
-                    {report.text}
+                    {report.text || "No content available"}
                   </div>
                 </div>
 
@@ -243,6 +261,105 @@ const AIReports = () => {
                     </div>
                   </div>
                 )}
+
+                {/* Action History */}
+                <div style={{
+                  marginTop: "1rem"
+                }}>
+                  <button
+                    onClick={() => toggleHistory(report.id)}
+                    style={{
+                      backgroundColor: "transparent",
+                      color: "#0095f6",
+                      border: "1px solid #0095f6",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontSize: "0.85rem",
+                      fontWeight: "600",
+                      padding: "0.5rem 1rem",
+                      width: "100%"
+                    }}
+                  >
+                    {expandedHistory[report.id] ? "Hide Action History" : "Show Action History"}
+                  </button>
+                  
+                  {expandedHistory[report.id] && (
+                    <div style={{
+                      marginTop: "1rem",
+                      backgroundColor: "#1a1a1a",
+                      borderRadius: "8px",
+                      padding: "1rem",
+                      border: "1px solid #363636"
+                    }}>
+                      <div style={{
+                        fontSize: "0.9rem",
+                        fontWeight: "600",
+                        color: "white",
+                        marginBottom: "0.75rem"
+                      }}>
+                        Action History
+                      </div>
+                      
+                      {expandedHistory[report.id].length === 0 ? (
+                        <div style={{
+                          color: "#8e8e8e",
+                          fontSize: "0.85rem",
+                          textAlign: "center",
+                          padding: "1rem"
+                        }}>
+                          No actions taken yet
+                        </div>
+                      ) : (
+                        <div style={{
+                          display: "grid",
+                          gap: "0.75rem"
+                        }}>
+                          {expandedHistory[report.id].map((action, index) => (
+                            <div
+                              key={action.id}
+                              style={{
+                                backgroundColor: "#262626",
+                                borderRadius: "8px",
+                                padding: "0.75rem",
+                                border: "1px solid #363636"
+                              }}
+                            >
+                              <div style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                marginBottom: "0.5rem"
+                              }}>
+                                <div>
+                                  <div style={{
+                                    fontSize: "0.85rem",
+                                    color: "white",
+                                    fontWeight: "600"
+                                  }}>
+                                    {action.action}
+                                  </div>
+                                  <div style={{
+                                    fontSize: "0.75rem",
+                                    color: "#8e8e8e",
+                                    marginTop: "0.25rem"
+                                  }}>
+                                    by {action.moderator.email}
+                                  </div>
+                                </div>
+                                <div style={{
+                                  fontSize: "0.75rem",
+                                  color: "#8e8e8e"
+                                }}>
+                                  {new Date(action.createdAt).toLocaleString()}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 {/* Actions */}
                 <div style={{
