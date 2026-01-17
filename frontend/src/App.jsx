@@ -1,0 +1,76 @@
+import { Routes, Route } from "react-router-dom";
+
+import Navbar from "./components/Navbar";
+
+// Public pages
+import Home from "./pages/Home";
+import Login from "./auth/Login";
+import Register from "./auth/Register";
+
+// User pages
+import UserDashboard from "./pages/user/UserDashboard";
+import SubmitContent from "./pages/user/SubmitContent";
+
+// Moderator pages
+import AIReports from "./pages/moderator/AIReports";
+import UserReports from "./pages/moderator/Reports";
+
+// Route protection
+import ProtectedRoute from "./auth/ProtectedRoute";
+
+function App() {
+  return (
+    <>
+      <Navbar />
+
+      <main className="container">
+        <Routes>
+          {/* Public */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* User protected routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/submit"
+            element={
+              <ProtectedRoute>
+                <SubmitContent />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Moderator protected routes */}
+          <Route
+            path="/moderator/ai-reports"
+            element={
+              <ProtectedRoute requireModerator>
+                <AIReports />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/moderator/user-reports"
+            element={
+              <ProtectedRoute requireModerator>
+                <UserReports />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </main>
+    </>
+  );
+}
+
+export default App;

@@ -3,9 +3,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
 }
+
 
 enum Role {
   USER
@@ -44,20 +46,26 @@ model User {
   createdAt DateTime @default(now())
 }
 
+
 model Content {
-  id        Int           @id @default(autoincrement())
-  text      String
-  status    ContentStatus @default(PENDING)
-  aiFlagged Boolean       @default(false)
+  id             Int           @id @default(autoincrement())
+  text           String
+  status         ContentStatus @default(PENDING)
+  aiFlagged      Boolean       @default(false)
 
-  userId    Int
-  user      User          @relation(fields: [userId], references: [id])
+  aiAttempts     Int           @default(0)
+  aiCompleted    Boolean       @default(false)
+  aiError        String?
 
-  reports   Report[]
-  actions   ModerationAction[]
+  userId         Int
+  user           User          @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
+  reports        Report[]
+  actions        ModerationAction[]
+
+  createdAt      DateTime      @default(now())
 }
+
 
 model Report {
   id        Int          @id @default(autoincrement())

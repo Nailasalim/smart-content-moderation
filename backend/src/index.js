@@ -1,23 +1,26 @@
-import contentRoutes from "./routes/content.routes.js";
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+
 import authRoutes from "./routes/auth.routes.js";
-
-
-dotenv.config();
+import contentRoutes from "./routes/content.routes.js";
+import moderationRoutes from "./routes/moderation.routes.js";
+import reportRoutes from "./routes/report.routes.js";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/content", contentRoutes);
+app.use("/api/moderation", moderationRoutes);
+app.use("/api/report", reportRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Backend server running successfully 🚀");
+  res.send("Backend server running 🚀");
 });
 
 const PORT = process.env.PORT || 5000;
