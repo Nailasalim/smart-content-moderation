@@ -13,11 +13,15 @@ const MyActions = () => {
       setError(null);
       
       try {
-        const response = await getMyActions(activeFilter === "All" ? null : activeFilter);
+        const filterParam = activeFilter === "All" ? null : activeFilter;
+        console.log("Fetching my actions with filter:", filterParam);
+        const response = await getMyActions(filterParam);
+        console.log("My actions response:", response);
         setActions(response.data || []);
       } catch (err) {
         console.error("Failed to fetch my actions:", err);
-        setError("Failed to load your moderation actions. Please try again.");
+        console.error("Error details:", err.response?.data || err.message);
+        setError(err.response?.data?.message || "Failed to load your moderation actions. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -102,7 +106,7 @@ const MyActions = () => {
           marginBottom: "2rem",
           fontFamily: "Arial, sans-serif"
         }}>
-          My Actions
+          Your Actions
         </h1>
 
         {/* Filter Tabs */}

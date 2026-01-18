@@ -151,13 +151,23 @@ export const getMyActions = async (req, res) => {
   try {
     const moderatorId = req.user.id;
     const { action } = req.query;
+    console.log(`[getMyActions] Moderator ID: ${moderatorId}, Action filter: ${action}`);
 
     // Build where clause for filtering
     let whereClause = { moderatorId };
     
     // Add action filter if provided
-    if (action && ["APPROVED", "REMOVED", "WARNED"].includes(action)) {
-      whereClause.action = action;
+    // Map frontend action names (APPROVED, REMOVED, WARNED) to ActionType enum (APPROVE, REMOVE, WARN)
+    if (action) {
+      const actionMap = {
+        "APPROVED": "APPROVE",
+        "REMOVED": "REMOVE",
+        "WARNED": "WARN"
+      };
+      const mappedAction = actionMap[action] || action;
+      if (["APPROVE", "REMOVE", "WARN"].includes(mappedAction)) {
+        whereClause.action = mappedAction;
+      }
     }
 
     const actions = await prisma.moderationAction.findMany({
@@ -184,19 +194,27 @@ export const getMyActions = async (req, res) => {
       },
     });
 
-    // Format response
-    const formattedActions = actions.map((action) => ({
-      id: action.id,
-      action: action.action,
-      createdAt: action.createdAt,
-      content: {
-        id: action.content.id,
-        text: action.content.text,
-        status: action.content.status,
-        createdAt: action.content.createdAt,
-      },
-      moderator: action.moderator,
-    }));
+    // Format response - map ActionType enum to display names
+    const formattedActions = actions.map((actionItem) => {
+      // Map ActionType enum (APPROVE, WARN, REMOVE) to display names (APPROVED, WARNED, REMOVED)
+      let actionDisplayName = actionItem.action;
+      if (actionItem.action === "APPROVE") actionDisplayName = "APPROVED";
+      else if (actionItem.action === "REMOVE") actionDisplayName = "REMOVED";
+      else if (actionItem.action === "WARN") actionDisplayName = "WARNED";
+      
+      return {
+        id: actionItem.id,
+        action: actionDisplayName,
+        createdAt: actionItem.createdAt,
+        content: {
+          id: actionItem.content.id,
+          text: actionItem.content.text,
+          status: actionItem.content.status,
+          createdAt: actionItem.content.createdAt,
+        },
+        moderator: actionItem.moderator,
+      };
+    });
 
     return res.status(200).json(formattedActions);
   } catch (error) {

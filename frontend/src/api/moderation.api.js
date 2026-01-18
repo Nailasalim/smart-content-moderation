@@ -20,6 +20,13 @@ export const getContentHistory = (contentId) => {
 
 // Get moderator's own actions
 export const getMyActions = (action) => {
-  const url = action ? `/moderator/my-actions?action=${action}` : "/moderator/my-actions";
+  // Map frontend action names to backend action names
+  const actionMap = {
+    "APPROVED": "APPROVE",
+    "REMOVED": "REMOVE",
+    "WARNED": "WARN"
+  };
+  const backendAction = action && actionMap[action] ? actionMap[action] : action;
+  const url = backendAction ? `/moderation/my-actions?action=${backendAction}` : "/moderation/my-actions";
   return api.get(url);
 };

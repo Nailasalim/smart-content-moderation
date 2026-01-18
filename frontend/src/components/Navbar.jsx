@@ -91,6 +91,26 @@ const Navbar = () => {
               >
                 User Reports
               </Link>
+              <Link
+                to="/moderator/my-actions"
+                style={{
+                  color: "#0095f6",
+                  textDecoration: "none",
+                  fontSize: "0.9rem",
+                  fontWeight: "600",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "4px",
+                  transition: "all 0.2s ease"
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "rgba(0, 149, 246, 0.1)";
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "transparent";
+                }}
+              >
+                Your Actions
+              </Link>
             </>
           ) : isAuthenticated && !isModerator ? (
             <>
