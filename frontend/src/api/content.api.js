@@ -24,3 +24,8 @@ export const getFlaggedContent = () => {
 export const getContentByStatus = (status) => {
   return api.get(`/content/by-status/${status}`);
 };
+
+// Get content by ID
+export const getContentById = (contentId) => {
+  return api.get(`/content/${contentId}`);
+};

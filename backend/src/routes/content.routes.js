@@ -7,6 +7,7 @@ import {
   getFlaggedContent,
   getContentByStatus,
   getCommunityContent,
+  getContentById,
 } from "../controllers/content.controller.js";
 
 const router = express.Router();
@@ -56,6 +57,15 @@ router.get(
   authenticateToken,
   requireRole("MODERATOR"),
   getContentByStatus
+);
+
+/**
+ * USER: Get content by ID
+ */
+router.get(
+  "/:id",
+  authenticateToken,
+  getContentById
 );
 
 export default router;

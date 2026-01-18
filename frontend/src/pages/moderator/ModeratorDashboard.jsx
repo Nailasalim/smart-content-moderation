@@ -4,13 +4,19 @@ import { useState, useEffect } from "react";
 import api from "../../api/axios";
 import { getContentByStatus } from "../../api/content.api";
 import { getReportsByContentStatus } from "../../api/report.api";
+import MyActions from "../moderator/MyActions";
+import { useLocation } from "react-router-dom";
 
 const ModeratorDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [actionStatus, setActionStatus] = useState("ALL");
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Check if we're on the my-actions route
+  const isMyActionsPage = location.pathname === "/moderator/my-actions";
 
   useEffect(() => {
     const fetchContentByActionStatus = async () => {
@@ -84,6 +90,11 @@ const ModeratorDashboard = () => {
     fetchContentByActionStatus();
   }, [actionStatus]);
 
+  // If on my-actions page, show MyActions component
+  if (isMyActionsPage) {
+    return <MyActions />;
+  }
+
   return (
     <div style={{
       backgroundColor: "#000000",
@@ -121,7 +132,7 @@ const ModeratorDashboard = () => {
         {/* Quick Actions */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
           gap: "1.5rem",
           marginBottom: "2rem"
         }}>
@@ -208,6 +219,49 @@ const ModeratorDashboard = () => {
               lineHeight: "1.4"
             }}>
               Content reported by users
+            </p>
+          </div>
+
+          <div
+            onClick={() => navigate("/moderator/my-actions")}
+            style={{
+              backgroundColor: "#262626",
+              borderRadius: "12px",
+              padding: "2rem",
+              textAlign: "center",
+              cursor: "pointer",
+              border: "1px solid #363636",
+              transition: "all 0.2s ease"
+            }}
+            onMouseOver={(e) => {
+              e.target.style.backgroundColor = "#363636";
+              e.target.style.transform = "translateY(-2px)";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.backgroundColor = "#262626";
+              e.target.style.transform = "translateY(0)";
+            }}
+          >
+            <div style={{
+              fontSize: "2.5rem",
+              marginBottom: "1rem"
+            }}>
+              📝
+            </div>
+            <h3 style={{
+              fontSize: "1.2rem",
+              fontWeight: "600",
+              marginBottom: "0.5rem",
+              color: "white"
+            }}>
+              My Actions
+            </h3>
+            <p style={{
+              color: "#8e8e8e",
+              fontSize: "0.9rem",
+              lineHeight: "1.4"
+            }}>
+              Actions performed by you
             </p>
           </div>
 

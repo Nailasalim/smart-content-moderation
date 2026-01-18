@@ -20,6 +20,7 @@ export const reportContent = async (req, res) => {
       return res.status(404).json({ message: "Content not found" });
     }
 
+    // Create the report
     const report = await prisma.report.create({
       data: {
         reason,
@@ -28,8 +29,21 @@ export const reportContent = async (req, res) => {
       },
     });
 
+    // Change content status to PENDING so it's hidden from users and sent for moderator review
+    // This ensures user-reported content appears in User Reports section, not AI Reports
+    // Change status to PENDING regardless of current status (APPROVED or FLAGGED)
+    // This way, once a user reports it, it goes to User Reports for human review
+    if (content.status !== "PENDING") {
+      await prisma.content.update({
+        where: { id: contentId },
+        data: {
+          status: "PENDING",
+        },
+      });
+    }
+
     return res.status(201).json({
-      message: "Content reported successfully",
+      message: "Content reported successfully. It has been sent for moderator review.",
       report,
     });
   } catch (error) {
@@ -45,8 +59,15 @@ export const getAllReports = async (req, res) => {
   const { status } = req.query;
 
   try {
+    // Only get reports for PENDING content (user-reported)
+    // This ensures user-reported content only appears in User Reports, not AI Reports
     const reports = await prisma.report.findMany({
-      where: status ? { status } : {},
+      where: {
+        ...(status ? { status } : {}),
+        content: {
+          status: "PENDING"  // Only show reports for user-reported content
+        }
+      },
       include: {
         user: { select: { id: true, name: true, email: true } },
         content: {
@@ -261,27 +282,37 @@ export const getReportsByUser = async (req, res) => {
 
 /**
  * USER: Get reports made by the authenticated user
- * GET /report/user-reports
+ * GET /report/user-reports or GET /report/my-reports
  */
 export const getUserReports = async (req, res) => {
-  const userId = req.user.id;
-
   try {
-    // Get all reports made by this user with content details
+    // Verify Prisma client is available
+    if (!prisma) {
+      console.error("Prisma client is not initialized");
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    const userId = req.user?.id;
+    
+    if (!userId) {
+      console.error("User ID is missing from request. req.user:", req.user);
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    console.log("Fetching reports for user ID:", userId);
+    
+    // First, get all reports for this user
     const reports = await prisma.report.findMany({
       where: {
         userId: userId
       },
       include: {
         content: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true
-              }
-            }
+          select: {
+            id: true,
+            text: true,
+            status: true,
+            createdAt: true
           }
         }
       },
@@ -290,26 +321,34 @@ export const getUserReports = async (req, res) => {
       }
     });
 
-    // Format the response
-    const formattedReports = reports.map(report => ({
-      id: report.id,
-      reason: report.reason,
-      status: report.status,
-      createdAt: report.createdAt,
-      updatedAt: report.updatedAt,
-      content: {
-        id: report.content?.id,
-        text: report.content?.text,
-        status: report.content?.status,
-        createdAt: report.content?.createdAt,
-        updatedAt: report.content?.updatedAt,
-        user: report.content?.user
-      }
-    }));
+    console.log(`Found ${reports.length} reports for user ${userId}`);
 
+    // Format the response - use moderatorAction directly from Report table
+    const formattedReports = reports.map(report => {
+      return {
+        reportId: report.id,
+        contentId: report.content?.id || null,
+        contentText: report.content?.text || "Content not available",
+        reason: report.reason,
+        createdAt: report.createdAt,
+        status: report.status,  // PENDING or REVIEWED
+        moderatorAction: report.moderatorAction || null,  // APPROVED, REMOVED, WARNED, or null
+        reviewedAt: report.reviewedAt || null
+      };
+    });
+
+    console.log(`Formatted ${formattedReports.length} reports successfully`);
     return res.status(200).json(formattedReports);
   } catch (error) {
     console.error("Get user reports error:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    if (error.stack) {
+      console.error("Error stack:", error.stack.substring(0, 500));
+    }
+    return res.status(500).json({ 
+      message: "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined
+    });
   }
 };

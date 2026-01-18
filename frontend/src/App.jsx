@@ -14,7 +14,8 @@ import YourReports from "./pages/user/YourReports";
 
 // Moderator pages
 import AIReports from "./pages/moderator/AIReports";
-import UserReports from "./pages/moderator/Reports";
+import UserReports from "./pages/moderator/UserReports";
+import MyActions from "./components/moderator/MyActions";
 import ModeratorDashboard from "./pages/moderator/ModeratorDashboard";
 
 // Route protection
@@ -84,6 +85,15 @@ function App() {
             element={
               <ProtectedRoute requireModerator>
                 <UserReports />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/moderator/my-actions"
+            element={
+              <ProtectedRoute requireModerator>
+                <MyActions />
               </ProtectedRoute>
             }
           />

@@ -15,5 +15,11 @@ export const takeModerationAction = (contentId, action) => {
 
 // Fetch content history
 export const getContentHistory = (contentId) => {
-  return api.get(`/moderation/history/${contentId}`);
+  return api.get(`/moderator/history/${contentId}`);
+};
+
+// Get moderator's own actions
+export const getMyActions = (action) => {
+  const url = action ? `/moderator/my-actions?action=${action}` : "/moderator/my-actions";
+  return api.get(url);
 };

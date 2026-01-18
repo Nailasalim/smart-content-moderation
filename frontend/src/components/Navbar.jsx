@@ -222,7 +222,7 @@ const Navbar = () => {
               {user?.name || user?.email}
             </span>
             
-            {/* Only show Dashboard and Submit links for regular users */}
+            {/* Only show Dashboard, Submit, and Your Reports links for regular users */}
             {!isModerator && (
               <>
                 <Link
@@ -265,6 +265,27 @@ const Navbar = () => {
                   }}
                 >
                   Submit
+                </Link>
+
+                <Link
+                  to="/your-reports"
+                  style={{
+                    color: "white",
+                    textDecoration: "none",
+                    fontSize: "0.9rem",
+                    fontWeight: "400",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "4px",
+                    transition: "all 0.2s ease"
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.backgroundColor = "transparent";
+                  }}
+                >
+                  Your Reports
                 </Link>
               </>
             )}

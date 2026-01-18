@@ -5,6 +5,7 @@ import {
   getModerationQueue,
   takeModerationAction,
   getContentHistory,
+  getMyActions,
 } from "../controllers/moderation.controller.js";
 
 const router = express.Router();
@@ -28,6 +29,13 @@ router.get(
   authenticateToken,
   requireRole("MODERATOR"),
   getContentHistory
+);
+
+router.get(
+  "/my-actions",
+  authenticateToken,
+  requireRole("MODERATOR"),
+  getMyActions
 );
 
 export default router;

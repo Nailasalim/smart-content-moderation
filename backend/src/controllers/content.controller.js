@@ -154,15 +154,14 @@ export const getApprovedContent = async (req, res) => {
 
 /**
  * GET /content/community
- * Fetch community content (APPROVED + WARNED content for users)
+ * Fetch community content (ONLY APPROVED content for users)
+ * Reported content (PENDING) and FLAGGED content are hidden until moderator approves
  */
 export const getCommunityContent = async (req, res) => {
   try {
     const content = await prisma.content.findMany({
       where: {
-        status: {
-          in: ["APPROVED", "FLAGGED"]
-        }
+        status: "APPROVED"  // Only show APPROVED content to users
       },
       include: {
         user: {
@@ -252,9 +251,11 @@ export const getContentByStatus = async (req, res) => {
 
 export const getFlaggedContent = async (req, res) => {
   try {
+    // Only get FLAGGED content (AI-flagged), NOT PENDING (user-reported)
+    // User-reported content should only appear in User Reports section
     const content = await prisma.content.findMany({
       where: {
-        status: "FLAGGED",
+        status: "FLAGGED",  // Only AI-flagged content
       },
       include: {
         user: {
@@ -280,5 +281,55 @@ export const getFlaggedContent = async (req, res) => {
       success: false,
       message: "Failed to fetch flagged content",
     });
+  }
+};
+
+/**
+ * GET /content/:id
+ * Get content by ID (for viewing full content details)
+ */
+export const getContentById = async (req, res) => {
+  try {
+    const contentId = Number(req.params.id);
+
+    if (!contentId || isNaN(contentId)) {
+      return res.status(400).json({ message: "Invalid content ID" });
+    }
+
+    const content = await prisma.content.findUnique({
+      where: { id: contentId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        moderationActions: {
+          include: {
+            moderator: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    if (!content) {
+      return res.status(404).json({ message: "Content not found" });
+    }
+
+    return res.status(200).json(content);
+  } catch (error) {
+    console.error("Get content by ID error:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

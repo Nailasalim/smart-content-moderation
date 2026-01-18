@@ -15,6 +15,7 @@ const router = express.Router();
 router.post("/", authenticateToken, reportContent);
 
 router.get("/user-reports", authenticateToken, getUserReports);
+router.get("/my-reports", authenticateToken, getUserReports);
 
 router.get("/", authenticateToken, requireRole("MODERATOR"), getAllReports);
 

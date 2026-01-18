@@ -68,9 +68,10 @@ model Content {
 
 
 model Report {
-  id        Int          @id @default(autoincrement())
-  reason    String
-  status    ReportStatus @default(PENDING)
+  id              Int          @id @default(autoincrement())
+  reason          String
+  status          ReportStatus @default(PENDING)
+  moderatorAction String?      // APPROVED, REMOVED, WARNED, or null
 
   contentId Int
   userId    Int
@@ -78,7 +79,8 @@ model Report {
   content   Content @relation(fields: [contentId], references: [id])
   user      User    @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  reviewedAt  DateTime?
 }
 
 model ModerationAction {
