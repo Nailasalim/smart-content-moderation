@@ -45,9 +45,7 @@ const Navbar = () => {
         <div style={{
           display: "flex",
           alignItems: "center",
-          gap: "1rem",
-          justifyContent: "flex-end",  // Move links to the right
-          flex: 1  // Take up remaining space
+          gap: "1rem"
         }}>
           {isAuthenticated && isModerator ? (
             <>

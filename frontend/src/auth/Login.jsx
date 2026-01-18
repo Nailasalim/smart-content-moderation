@@ -23,7 +23,7 @@ const Login = () => {
         navigate("/dashboard");
       }
     } catch (err) {
-      setError("Invalid email or password");
+      setError(err.message || "Login failed. Please try again.");
     }
   };
 

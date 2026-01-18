@@ -141,28 +141,30 @@ const Home = () => {
                 flexDirection: "column",
                 gap: "1rem"
               }}>
-                <Link
-                  to="/dashboard"
-                  style={{
-                    backgroundColor: "#0095f6",
-                    color: "white",
-                    textDecoration: "none",
-                    padding: "0.75rem",
-                    borderRadius: "8px",
-                    fontWeight: "600",
-                    fontSize: "0.9rem",
-                    textAlign: "center",
-                    transition: "all 0.2s ease"
-                  }}
-                  onMouseOver={(e) => {
-                    e.target.style.backgroundColor = "#1877f2";
-                  }}
-                  onMouseOut={(e) => {
-                    e.target.style.backgroundColor = "#0095f6";
-                  }}
-                >
-                  Go to Dashboard
-                </Link>
+                {user.role !== "MODERATOR" && (
+                  <Link
+                    to="/dashboard"
+                    style={{
+                      backgroundColor: "#0095f6",
+                      color: "white",
+                      textDecoration: "none",
+                      padding: "0.75rem",
+                      borderRadius: "8px",
+                      fontWeight: "600",
+                      fontSize: "0.9rem",
+                      textAlign: "center",
+                      transition: "all 0.2s ease"
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.backgroundColor = "#1877f2";
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.backgroundColor = "#0095f6";
+                    }}
+                  >
+                    Go to Dashboard
+                  </Link>
+                )}
 
                 {user.role === "MODERATOR" && (
                   <Link

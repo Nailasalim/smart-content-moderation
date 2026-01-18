@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children, requireModerator = false }) => {
 
   // Not logged in
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // Logged in but NOT moderator

@@ -56,7 +56,12 @@ const ContentList = ({ refreshTrigger }) => {
 
     setReporting(true);
     try {
+      // Report content and remove it from dashboard
       await reportContent(reportModal.contentId, reportReason);
+      
+      // Remove the reported content from local state
+      setContents(prev => prev.filter(content => content.id !== reportModal.contentId));
+      
       setReportModal({ isOpen: false, contentId: null });
       setReportReason("");
       setReportSuccess(true);

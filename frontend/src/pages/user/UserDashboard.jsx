@@ -4,11 +4,18 @@ import { useAuth } from "../../context/AuthContext";
 import ContentList from "../../components/ContentList";
 
 const UserDashboard = () => {
-  const { user } = useAuth();
+  const { user, isModerator } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [contentSubmitted, setContentSubmitted] = useState(false);
   const [contentFlagged, setContentFlagged] = useState(false);
+
+  // Redirect moderators to moderator dashboard
+  useEffect(() => {
+    if (isModerator) {
+      navigate("/moderator", { replace: true });
+    }
+  }, [isModerator, navigate]);
 
   // Check for URL parameters indicating submission result
   useEffect(() => {

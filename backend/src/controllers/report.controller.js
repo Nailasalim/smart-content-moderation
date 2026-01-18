@@ -152,3 +152,164 @@ export const getReportsByContentStatus = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+/**
+ * MODERATOR: Get all reports made by a specific user
+ * GET /report/user/:userId
+ */
+export const getReportsByUser = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Validate userId
+    if (!userId || isNaN(Number(userId))) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    // Check if user exists
+    const user = await prisma.user.findUnique({
+      where: { id: Number(userId) },
+      select: { id: true, name: true, email: true }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Get all reports made by this user with content details
+    const reports = await prisma.report.findMany({
+      where: {
+        userId: Number(userId)
+      },
+      include: {
+        content: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            },
+            moderationActions: {
+              include: {
+                moderator: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true
+                  }
+                }
+              },
+              orderBy: {
+                createdAt: "desc"
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    // Format the response with status information
+    const formattedReports = reports.map(report => {
+      const contentStatus = report.content?.status || "UNKNOWN";
+      const latestModerationAction = report.content?.moderationActions?.[0];
+      
+      return {
+        id: report.id,
+        reason: report.reason,
+        status: report.status,
+        createdAt: report.createdAt,
+        updatedAt: report.updatedAt,
+        content: {
+          id: report.content?.id,
+          text: report.content?.text,
+          status: contentStatus,
+          createdAt: report.content?.createdAt,
+          updatedAt: report.content?.updatedAt,
+          user: report.content?.user
+        },
+        user: user,
+        moderationStatus: latestModerationAction ? {
+          action: latestModerationAction.action,
+          moderator: latestModerationAction.moderator,
+          createdAt: latestModerationAction.createdAt
+        } : null
+      };
+    });
+
+    return res.status(200).json({
+      user,
+      reports: formattedReports,
+      totalReports: formattedReports.length,
+      summary: {
+        pending: formattedReports.filter(r => r.status === "PENDING").length,
+        reviewed: formattedReports.filter(r => r.status === "REVIEWED").length,
+        contentApproved: formattedReports.filter(r => r.content?.status === "APPROVED").length,
+        contentRemoved: formattedReports.filter(r => r.content?.status === "REMOVED").length,
+        contentFlagged: formattedReports.filter(r => r.content?.status === "FLAGGED").length
+      }
+    });
+  } catch (error) {
+    console.error("Get reports by user error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+/**
+ * USER: Get reports made by the authenticated user
+ * GET /report/user-reports
+ */
+export const getUserReports = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    // Get all reports made by this user with content details
+    const reports = await prisma.report.findMany({
+      where: {
+        userId: userId
+      },
+      include: {
+        content: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    // Format the response
+    const formattedReports = reports.map(report => ({
+      id: report.id,
+      reason: report.reason,
+      status: report.status,
+      createdAt: report.createdAt,
+      updatedAt: report.updatedAt,
+      content: {
+        id: report.content?.id,
+        text: report.content?.text,
+        status: report.content?.status,
+        createdAt: report.content?.createdAt,
+        updatedAt: report.content?.updatedAt,
+        user: report.content?.user
+      }
+    }));
+
+    return res.status(200).json(formattedReports);
+  } catch (error) {
+    console.error("Get user reports error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

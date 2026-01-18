@@ -6,11 +6,15 @@ import {
   getAllReports,
   reviewReport,
   getReportsByContentStatus,
+  getReportsByUser,
+  getUserReports,
 } from "../controllers/report.controller.js";
 
 const router = express.Router();
 
 router.post("/", authenticateToken, reportContent);
+
+router.get("/user-reports", authenticateToken, getUserReports);
 
 router.get("/", authenticateToken, requireRole("MODERATOR"), getAllReports);
 
@@ -26,6 +30,13 @@ router.patch(
   authenticateToken,
   requireRole("MODERATOR"),
   reviewReport
+);
+
+router.get(
+  "/user/:userId",
+  authenticateToken,
+  requireRole("MODERATOR"),
+  getReportsByUser
 );
 
 export default router;

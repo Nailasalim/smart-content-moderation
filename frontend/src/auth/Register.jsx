@@ -26,7 +26,7 @@ export default function Register() {
         navigate("/");
       }, 2000);
     } catch (err) {
-      setError("Registration failed. Please try again.");
+      setError(err.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -29,23 +29,68 @@ export const AuthProvider = ({ children }) => {
 
   // LOGIN
   const login = async (email, password) => {
-    const res = await api.post("/auth/login", { email, password });
-    localStorage.setItem("token", res.data.token);
+    try {
+      console.log("Attempting login with:", email);
+      const res = await api.post("/auth/login", { email, password });
+      console.log("Login response:", res.data);
+      
+      localStorage.setItem("token", res.data.token);
 
-    // 🔑 FETCH USER AFTER LOGIN
-    const profileRes = await api.get("/auth/profile");
-    setUser(profileRes.data.user);
+      // 🔑 FETCH USER AFTER LOGIN
+      const profileRes = await api.get("/auth/profile");
+      console.log("Profile response:", profileRes.data);
+      
+      setUser(profileRes.data.user);
 
-    return profileRes.data.user;
+      return profileRes.data.user;
+    } catch (error) {
+      console.error("Login error:", error);
+      console.error("Error response:", error.response);
+      console.error("Error config:", error.config);
+      
+      // Clear token if login failed
+      localStorage.removeItem("token");
+      setUser(null);
+      
+      // Throw a more descriptive error
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      } else if (error.code === "ECONNREFUSED") {
+        throw new Error("Cannot connect to server. Please check if the backend is running.");
+      } else if (error.message) {
+        throw new Error(error.message);
+      } else {
+        throw new Error("Login failed. Please try again.");
+      }
+    }
   };
 
   // REGISTER
   const register = async (name, email, password) => {
-    const res = await api.post("/auth/register", { name, email, password });
-    
-    // Note: Backend doesn't return token on register, user needs to login separately
-    // For now, just return the user data without auto-login
-    return res.data.user;
+    try {
+      console.log("Attempting registration with:", { name, email });
+      const res = await api.post("/auth/register", { name, email, password });
+      console.log("Registration response:", res.data);
+      
+      // Note: Backend doesn't return token on register, user needs to login separately
+      // For now, just return the user data without auto-login
+      return res.data.user;
+    } catch (error) {
+      console.error("Register error:", error);
+      console.error("Error response:", error.response);
+      console.error("Error config:", error.config);
+      
+      // Throw a more descriptive error
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      } else if (error.code === "ECONNREFUSED") {
+        throw new Error("Cannot connect to server. Please check if the backend is running.");
+      } else if (error.message) {
+        throw new Error(error.message);
+      } else {
+        throw new Error("Registration failed. Please try again.");
+      }
+    }
   };
 
   const logout = () => {

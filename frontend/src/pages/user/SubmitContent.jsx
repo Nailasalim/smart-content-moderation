@@ -1,12 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { submitContent } from "../../api/content.api";
 
 const SubmitContent = () => {
+  const { isModerator } = useAuth();
   const navigate = useNavigate();
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  // Redirect moderators to moderator dashboard
+  useEffect(() => {
+    if (isModerator) {
+      navigate("/moderator", { replace: true });
+    }
+  }, [isModerator, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

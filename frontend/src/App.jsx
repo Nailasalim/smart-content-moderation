@@ -10,6 +10,7 @@ import Register from "./auth/Register";
 // User pages
 import UserDashboard from "./pages/user/UserDashboard";
 import SubmitContent from "./pages/user/SubmitContent";
+import YourReports from "./pages/user/YourReports";
 
 // Moderator pages
 import AIReports from "./pages/moderator/AIReports";
@@ -46,6 +47,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <SubmitContent />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/your-reports"
+            element={
+              <ProtectedRoute>
+                <YourReports />
               </ProtectedRoute>
             }
           />
