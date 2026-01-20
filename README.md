@@ -48,7 +48,7 @@ A comprehensive content moderation system that combines AI-powered detection wit
 
 - Node.js (v18 or higher)
 - PostgreSQL database
-- Google Generative AI API key (for AI moderation)
+- GEMINI API key (for AI moderation)
 - npm or yarn package manager
 
 ## Installation
@@ -78,7 +78,7 @@ A comprehensive content moderation system that combines AI-powered detection wit
    DATABASE_URL="your_postgresql_connection_string"
    JWT_SECRET="your_jwt_secret_key"
    PORT=5000
-   GOOGLE_AI_API_KEY="your_google_generative_ai_api_key"
+   GEMINI_API_KEY="your_gemini_api_key"
    ```
 
 5. **Set up the database**
@@ -212,7 +212,7 @@ smart-content-moderation/
 ## Key Features Explained
 
 ### AI Moderation
-- Uses Google Generative AI to analyze content
+- Uses GEMINI to analyze content
 - Automatically flags potentially inappropriate content
 - Includes retry logic (3 attempts) for reliability
 - Falls back to manual review if AI fails
@@ -258,7 +258,7 @@ npx prisma studio
 DATABASE_URL="postgresql://user:password@localhost:5432/dbname"
 JWT_SECRET="your-secret-key-here"
 PORT=5000
-GOOGLE_AI_API_KEY="your-google-ai-api-key"
+GEMINI_API_KEY="your-google-ai-api-key"
 ```
 
 ## Contributing
@@ -280,7 +280,7 @@ This project is licensed under the ISC License.
 
 ## Acknowledgments
 
-- Google Generative AI for content moderation capabilities
+- GEMINI for content moderation capabilities
 - React and Express communities for excellent documentation
 - Prisma for the amazing ORM
 
