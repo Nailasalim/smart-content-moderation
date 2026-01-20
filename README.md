@@ -2,7 +2,7 @@
 
 A comprehensive content moderation system that combines AI-powered detection with human moderation. Users can post content, report inappropriate posts, and moderators can review and take action on flagged content.
 
-## 🚀 Features
+## Features
 
 ### User Features
 - **Post Content**: Share posts with the community
@@ -26,7 +26,7 @@ A comprehensive content moderation system that combines AI-powered detection wit
 - **Retry Logic**: Robust retry mechanism for AI API calls (up to 3 attempts)
 - **Fallback System**: Content sent for manual review if AI fails
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - **React 19** - UI library
@@ -44,14 +44,14 @@ A comprehensive content moderation system that combines AI-powered detection wit
 - **bcrypt** - Password hashing
 - **Google Generative AI** - AI content moderation
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Node.js (v18 or higher)
 - PostgreSQL database
 - Google Generative AI API key (for AI moderation)
 - npm or yarn package manager
 
-## 🔧 Installation
+## Installation
 
 1. **Clone the repository**
    ```bash
@@ -88,7 +88,7 @@ A comprehensive content moderation system that combines AI-powered detection wit
    npx prisma generate
    ```
 
-## 🚀 Running the Application
+## Running the Application
 
 ### Development Mode
 
@@ -120,7 +120,7 @@ A comprehensive content moderation system that combines AI-powered detection wit
    node src/index.js
    ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 smart-content-moderation/
@@ -164,14 +164,14 @@ smart-content-moderation/
 └── README.md
 ```
 
-## 🔐 Authentication & Authorization
+## Authentication & Authorization
 
 - **JWT-based authentication** for secure user sessions
 - **Role-based access control** (User/Moderator)
 - **Protected routes** for authenticated users
 - **Moderator-only routes** for admin functions
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - Register a new user
@@ -194,7 +194,7 @@ smart-content-moderation/
 - `GET /api/moderation/my-actions` - Get moderator's own actions
 - `GET /api/moderation/history/:contentId` - Get content moderation history
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### Models
 - **User**: User accounts with role (USER/MODERATOR)
@@ -209,7 +209,7 @@ smart-content-moderation/
 - `REMOVED` → Content removed by moderator
 - `WARNED` → Content warned but kept visible
 
-## 🎨 Key Features Explained
+## Key Features Explained
 
 ### AI Moderation
 - Uses Google Generative AI to analyze content
@@ -228,7 +228,7 @@ smart-content-moderation/
 - **User Reports**: Content reported by users
 - **Your Actions**: Personal moderation history with filtering
 
-## 🔒 Security Features
+## Security Features
 
 - Password hashing with bcrypt
 - JWT token-based authentication
@@ -236,7 +236,7 @@ smart-content-moderation/
 - Protected API endpoints
 - Input validation and sanitization
 
-## 🧪 Development
+## Development
 
 ### Database Migrations
 ```bash
@@ -251,7 +251,7 @@ cd backend
 npx prisma studio
 ```
 
-## 📝 Environment Variables
+## Environment Variables
 
 ### Backend (.env)
 ```env
@@ -261,7 +261,7 @@ PORT=5000
 GOOGLE_AI_API_KEY="your-google-ai-api-key"
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -269,16 +269,16 @@ GOOGLE_AI_API_KEY="your-google-ai-api-key"
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the ISC License.
 
-## 👤 Author
+## Author
 
 **Naila Salim**
 - GitHub: [@Nailasalim](https://github.com/Nailasalim)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Google Generative AI for content moderation capabilities
 - React and Express communities for excellent documentation
