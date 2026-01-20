@@ -127,7 +127,7 @@ const UserDashboard = () => {
               e.target.style.backgroundColor = "#0095f6";
             }}
           >
-            Submit Content
+            Post
           </Link>
         </div>
         

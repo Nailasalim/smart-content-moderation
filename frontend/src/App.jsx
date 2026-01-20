@@ -14,7 +14,7 @@ import YourReports from "./pages/user/YourReports";
 
 // Moderator pages
 import AIReports from "./pages/moderator/AIReports";
-import UserReports from "./components/moderator/UserReports";
+import UserReports from "./pages/moderator/Reports";
 import MyActions from "./components/moderator/MyActions";
 import ModeratorDashboard from "./pages/moderator/ModeratorDashboard";
 

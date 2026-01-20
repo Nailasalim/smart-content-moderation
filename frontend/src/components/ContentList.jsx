@@ -110,7 +110,7 @@ const ContentList = ({ refreshTrigger }) => {
         marginBottom: "1.5rem",
         fontFamily: "Arial, sans-serif"
       }}>
-        Community Content
+        Community Posts
       </h2>
 
       {contents.length === 0 ? (

@@ -68,7 +68,7 @@ const SubmitContent = () => {
             marginBottom: "0.5rem",
             fontFamily: "Arial, sans-serif"
           }}>
-            Submit Content
+            Post
           </h1>
           <p style={{
             color: "#8e8e8e",
@@ -170,7 +170,7 @@ const SubmitContent = () => {
                   transition: "all 0.2s ease"
                 }}
               >
-                {submitting ? "Submitting..." : "Submit Content"}
+                {submitting ? "Posting..." : "Post"}
               </button>
             </div>
           </form>

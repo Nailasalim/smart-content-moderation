@@ -155,7 +155,7 @@ const Navbar = () => {
                       e.target.style.backgroundColor = "transparent";
                     }}
                   >
-                    Submit Content
+                    Post
                   </Link>
                   <Link
                     to="/your-reports"
@@ -220,7 +220,7 @@ const Navbar = () => {
                   e.target.style.backgroundColor = "transparent";
                 }}
               >
-                Register
+                Sign Up
               </Link>
             </>
           )}
@@ -284,7 +284,7 @@ const Navbar = () => {
                     e.target.style.backgroundColor = "transparent";
                   }}
                 >
-                  Submit
+                  Post
                 </Link>
 
                 <Link
