@@ -42,7 +42,7 @@ A comprehensive content moderation system that combines AI-powered detection wit
 - **PostgreSQL** - Database
 - **JWT** - Authentication tokens
 - **bcrypt** - Password hashing
-- **Google Generative AI** - AI content moderation
+- **Gemini** - AI content moderation
 
 ## Prerequisites
 
